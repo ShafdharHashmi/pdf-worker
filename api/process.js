@@ -1,11 +1,11 @@
 // api/process.js
 
-import chromium from "chrome-aws-lambda";
-import puppeteer from "puppeteer-core";
+import chromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const { pdfUrl } = req.body;
@@ -22,13 +22,13 @@ export default async function handler(req, res) {
     });
 
     const page = await browser.newPage();
-    await page.goto(pdfUrl, { waitUntil: "networkidle2" });
+    await page.goto(pdfUrl, { waitUntil: 'networkidle2' });
 
     const html = await page.content();
     await browser.close();
 
-    res.status(200).json({ html });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(200).json({ html });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 }
