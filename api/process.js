@@ -1,27 +1,29 @@
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer";
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.status(405).send('Only POST requests allowed');
-    return;
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { pdfUrl } = req.body;
   if (!pdfUrl) {
-    res.status(400).send('Missing pdfUrl');
-    return;
+    return res.status(400).json({ error: "Missing pdfUrl in request body" });
   }
 
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+  try {
+    const browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
 
-  const page = await browser.newPage();
-  await page.goto(pdfUrl, { waitUntil: 'networkidle0' });
+    const page = await browser.newPage();
+    await page.goto(pdfUrl, { waitUntil: "networkidle0" });
 
-  const html = await page.content();
-  await browser.close();
+    const content = await page.content();
+    await browser.close();
 
-  res.status(200).json({ html });
+    return res.status(200).json({ html: content });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 }
