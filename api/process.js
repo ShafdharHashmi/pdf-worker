@@ -1,24 +1,17 @@
 import puppeteer from 'puppeteer';
 
-export default async function handler(request) {
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Only POST requests allowed' }), {
-      status: 405,
-    });
-  }
-
-  const { pdfUrl } = await request.json();
-
-  if (!pdfUrl) {
-    return new Response(JSON.stringify({ error: 'Missing pdfUrl' }), {
-      status: 400,
-    });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Only POST requests allowed' });
   }
 
   try {
+    const { pdfUrl } = req.body;
+    if (!pdfUrl) return res.status(400).json({ error: 'Missing pdfUrl' });
+
     const browser = await puppeteer.launch({
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
@@ -27,14 +20,8 @@ export default async function handler(request) {
     const html = await page.content();
     await browser.close();
 
-    return new Response(JSON.stringify({ html }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-    });
+    return res.status(200).json({ html });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to process PDF' });
   }
 }
