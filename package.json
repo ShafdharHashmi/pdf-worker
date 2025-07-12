@@ -1,12 +1,12 @@
 {
-    "name": "pdf-worker",
-    "version": "1.0.0",
-    "type": "module",
-    "scripts": {
-        "start": "node api/process.js"
-    },
-    "dependencies": {
-        "chrome-aws-lambda": "^10.1.0",
-        "puppeteer-core": "^10.4.0"
-    }
+  "name": "pdf-worker",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node api/process.js"
+  },
+  "dependencies": {
+  "chrome-aws-lambda": "10.1.0",
+  "puppeteer-core": "10.1.0"
+  }
 }
