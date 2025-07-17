@@ -1,3 +1,4 @@
+// api/process.js
 import chromium from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
 
@@ -12,10 +13,14 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing 'pdfUrl' in request body" });
   }
 
+  let browser = null;
+
   try {
-    const browser = await puppeteer.launch({
+    const executablePath = await chromium.executablePath;
+
+    browser = await puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath, // ✅ No fallback
+      executablePath,
       headless: chromium.headless,
     });
 
@@ -26,7 +31,8 @@ export default async function handler(req, res) {
     await browser.close();
 
     return res.status(200).json({ html });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+  } catch (err) {
+    if (browser) await browser.close();
+    return res.status(500).json({ error: err.message });
   }
 }
