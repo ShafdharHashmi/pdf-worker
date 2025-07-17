@@ -1,11 +1,15 @@
 {
-  "functions": {
-    "api/process.js": {
-      "memory": 1024,
-      "maxDuration": 10
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/process.js",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
-    { "src": "/api/process", "dest": "api/process.js" }
+    {
+      "src": "/api/process",
+      "dest": "api/process.js"
+    }
   ]
 }
